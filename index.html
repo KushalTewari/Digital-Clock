@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    animation: po 20s infinite;
+}
+@keyframes po {
+    
+
+    0% {background-image: linear-gradient(to right, rgb(252, 115, 115), rgb(255, 255, 154));}
+    25% {background-image: linear-gradient(to left, rgb(194, 64, 255), rgb(80, 209, 248));}
+    50% {background-image: linear-gradient(to right, rgb(81, 223, 233), rgb(81, 252, 124));}
+    75% {background-image: linear-gradient(to left, rgb(137, 247, 86), rgb(230, 130, 255));}
+    100% {background-image: linear-gradient(to right, rgb(230, 131, 255), rgb(172, 34, 53));}
+   
+
+}
+.switch{
+    margin-top: 2%;
+    margin-bottom: -8%;
+}
+#canvass{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: black;
+    min-width: 50%;
+    margin-top: 10%;
+    min-height: 60vh;
+    box-shadow: 7px 10px 25px 5px rgb(173, 72, 255);
+    border-radius: 20px;
+}
+h2,h3{
+    color: aliceblue;
+}
+
+.time{
+    text-align: center;
+    font-size: 80px;
+}
+.date{
+    text-align: center;
+    color: aliceblue;
+}
+button{
+    background-color: rgb(28, 168, 223);
+    border: none;
+    height: 8vh;
+    width: auto;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 1px 2px 4px rgb(158, 255, 226);
+
+}
+.container{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-evenly;
+}
+.stopwatchDisplay{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+    </style>
+</head>
+<body>
+    <button type="button" class="switch">Switch Modes</button>
+    <div id="canvass">
+        <h2 class="date"></h2>
+        <h2 class="time"></h2>
+        <div class="container">
+            <button type="submit" id="stopwatch">Stopwatch</button>
+            <button type="submit" id="reset">Reset</button>
+            <button type="submit" id="setTime">Set Time</button>
+        </div>
+        <span class="stopwatchDisplay">
+        <h3 id="endTime"></h3>
+        </span>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>  
+    <script src="script.js"></script>  
+    <script>
+        $(document).ready(function(){
+
+// Global Variables defined below.
+var counter = 0;
+var milisec = 0;
+var sec = 0;
+var min = 0;
+var a, b ;
+var lighting = 0;
+var manualHours = 0;
+var manualMinutes = 0;
+var manualSeconds = 0;
+
+
+var date = new Date();  //fetching current date.
+$('.date').html(date.toLocaleDateString('default', { weekday: 'long' })+", "+date.getDate()+" "+date.toLocaleString('default', { month: 'long' })+" "+date.getFullYear());
+  b= setInterval(function(){
+    var dt = new Date();
+    var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+    $('.time').html( time );
+}, 1000);
+
+// Functionality for StopWatch.
+$('#stopwatch').on('click', function(){
+   if(counter == 0)
+   {
+        a = setInterval(function()
+        {
+            if(milisec < 99)
+            {
+                milisec+=1;
+            }
+            if(milisec == 99)
+            {
+                milisec = 0;
+                sec +=1;
+            }
+            if(sec < 59 && milisec>99)
+            {
+                sec+=1;
+            }
+            if(sec == 59)
+            {
+                sec = 0;
+                min += 1;
+            }
+            if(min == 59 && sec>59)
+            {
+                clearInterval(a);
+            }
+            $('#endTime').html(min+":"+sec+":"+milisec);
+        },10);         
+    counter ++;
+    }
+    else{
+        $('#endTime').html(min+":"+sec+":"+milisec);
+        clearInterval(a);
+        counter --;
+    }
+});
+//Functionality for Reset.
+$('#reset').on('click', function(){
+    $('#startTime').html('');
+    $('#endTime').html('');
+    clearInterval(a);                
+    counter = 0;
+    milisec = 0;
+    sec = 0;
+    min = 0;
+});
+
+
+// Functionality for Manual Working of Clock.
+$('#setTime').on('click', function(){
+    clearInterval(b);
+    manualHours = Number(prompt("Enter hours"));
+    if(/^\d+$/.test(manualHours)== false || manualHours.length<1 || manualHours>23)
+    {
+        alert("Wrong Entry");
+        return;
+    }
+    manualMinutes = Number(prompt("Enter minutes"));
+    if(/^\d+$/.test(manualMinutes)== false || manualMinutes.length<1 || manualMinutes>60)
+    {
+        alert("Wrong Entry");
+        return;
+    }
+    manualSeconds = Number(prompt("Enter seconds"));
+    if(/^\d+$/.test(manualSeconds)== false || manualSeconds.length<1 || manualSeconds>60)
+    {
+        alert("Wrong Entry");
+        return;
+    }
+    
+    setInterval(function()      //Function to display the manual time entered by the user.
+        {
+            if(manualSeconds<59)
+            {
+                manualSeconds +=1;
+            }
+            if(manualSeconds == 59 && manualMinutes< 59)
+            {
+                manualSeconds = 0;
+                manualMinutes +=1;
+            }
+            if(manualSeconds == 59 && manualMinutes == 59 && manualHours < 24)
+            {
+                manualSeconds = 0;
+                manualMinutes = 0;
+                manualHours += 1;
+            }
+            if(manualSeconds == 59 && manualMinutes == 59 && manualHours == 24)
+            {
+                manualSeconds = 0;
+                manualMinutes = 0;
+                manualHours = 0;
+            }
+            $('.time').html(manualHours+":"+manualMinutes+":"+manualSeconds);
+        },1000);    
+});
+
+//Switching between day and night mode.
+$('.switch').on('click', function(){
+    if(lighting == 0)
+    {
+        $('.switch').html("Switch to Night mode");
+        $('#canvass').css({"background-color":"white"});
+        $('h2, h3').css("color","black");
+        lighting = 1;
+    }
+    else{
+        $('.switch').html('Switch to Day mode');
+        $('#canvass').css({"background-color":"black"});
+        $('h2, h3').css("color","white");
+        lighting = 0;
+    }
+});
+
+});
+    </script>
+    </script>
+</body>
+</html>
